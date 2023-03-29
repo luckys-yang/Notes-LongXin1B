@@ -64,7 +64,5 @@ void Hardware_Init(void)
     Ultrasound_Data.vULTRASOUND_init(); //超声波初始化
     My_uart_Data.vMY_UART5_init();  //串口5初始化
     myRtcData.vMY_RTC_init();   //RTC实时时钟初始化
-    //Lcd_Data.vLCD_disaplay_color_text(0,460,"坚持党的领导",Lcd_Data.Lcd_cid_color[3]);
-    fb_draw_gb2312_char(0,400,"龙");
 }
 

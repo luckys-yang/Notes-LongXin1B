@@ -1,6 +1,6 @@
 [Editors]
-OpenCount=10
-Focused=152
+OpenCount=11
+Focused=142
 
 [Editor_3]
 OpenOrder=-1
@@ -252,9 +252,9 @@ UnitIndex=140
 
 [Editor_143]
 OpenOrder=0
-CursorRow=65
-CursorCol=24
-TopLine=41
+CursorRow=66
+CursorCol=52
+TopLine=42
 LeftChar=1
 UnitIndex=142
 
@@ -268,9 +268,9 @@ UnitIndex=144
 
 [Editor_146]
 OpenOrder=7
-CursorRow=22
+CursorRow=29
 CursorCol=23
-TopLine=1
+TopLine=10
 LeftChar=1
 UnitIndex=145
 
@@ -308,10 +308,10 @@ UnitIndex=150
 
 [Editor_152]
 OpenOrder=1
-CursorRow=60
-CursorCol=58
-TopLine=109
-LeftChar=1
+CursorRow=199
+CursorCol=42
+TopLine=177
+LeftChar=2
 UnitIndex=151
 
 [Editor_153]
@@ -611,10 +611,10 @@ LeftChar=1
 UnitIndex=205
 
 [Editor_207]
-OpenOrder=-1
-CursorRow=56
-CursorCol=13
-TopLine=33
+OpenOrder=10
+CursorRow=67
+CursorCol=23
+TopLine=43
 LeftChar=1
 UnitIndex=206
 
