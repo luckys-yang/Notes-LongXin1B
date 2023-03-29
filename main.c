@@ -1,3 +1,6 @@
+/*
+破龙芯，支持国产！！！
+*/
 #include "all.h"
 #include "pic.h"    //图片数组存放
 
@@ -24,7 +27,7 @@ int main(void)
 #endif
 
     Hardware_Init();    //硬件初始化
-
+    
     for (;;)
     {
         Key_Data.vKEY_function();
