@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 #include <math.h>
 #include "ls1b.h"
 #include "mips.h"
@@ -23,6 +24,7 @@
 #include "i2c/gp7101.h"
 #include "lwmem.h"
 #include "ls1x_pwm.h"
+#include "lkdGuiTypedef.h"
 /*BSP END*/
 
 /*MY BEGIN*/
@@ -49,6 +51,13 @@
 #define SET  1
 #define RESET 0
 
+//Ê±¼äÆ¬ÂÖÑ¯
+typedef struct
+{
+    uint32_t TASK_LCD_TIME;
+}TASK_TypeDef;
+extern TASK_TypeDef TaskData;
+
 
 /*TEST FUNCTION BEGIN*/
 void Task_1_1(void);
@@ -56,6 +65,9 @@ void vSMG_test(void);
 void Task_3(void);
 void Task_5(void);
 void Task_7(void);
+void Coord_init(void);
+void Coord_display_date(void);
+void Task_while(void);
 /*TEST FUNCTION END*/
 
 #endif

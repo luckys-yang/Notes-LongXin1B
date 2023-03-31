@@ -6,8 +6,15 @@
 
 #include "lkdGui.h"
 #define TEST_DEBUG 1    //测试
+#define SCREEN_WIDTH 400
+#define SCREEN_HEIGHT 700
+
+
 
 /*USER FUNCTION BEGIN*/
+
+
+
 void Hardware_Init(void);
 /*USER FUNCTION END*/
 
@@ -17,7 +24,10 @@ char LCD_display_mode[] = LCD_800x480;
 
 #if TEST_DEBUG
 char test_arr[30];
+
 #endif
+    static uint16_t cnt = 0;
+    static uint8_t dir = 1;
 
 int main(void)
 {
@@ -27,16 +37,17 @@ int main(void)
 #endif
 
     Hardware_Init();    //硬件初始化
-    
     for (;;)
     {
         Key_Data.vKEY_function();
-        Lcd_Data.vLCD_display_function();
-        XiaoChuangData.vXIAOCHUANG_state_function();
-        Hmc5883l_Data.vHMC5883L_direction_function();
-        Ultrasound_Data.vULTRASOUND_get_distance_function();
-        My_uart_Data.vMY_UART5_receive_data_function();
-        myRtcData.vMY_RTC_get_time_function();
+        //XiaoChuangData.vUART4_rx_data_function();
+        //XiaoChuangData.vXIAOCHUANG_state_function();
+        //Task_while();
+        //Lcd_Data.vLCD_display_function();
+        //Hmc5883l_Data.vHMC5883L_direction_function();
+        //Ultrasound_Data.vULTRASOUND_get_distance_function();
+        //My_uart_Data.vMY_UART5_receive_data_function();
+        //myRtcData.vMY_RTC_get_time_function();
     }
 
     return 0;
@@ -47,6 +58,7 @@ int main(void)
 */
 void Hardware_Init(void)
 {
+    TaskData.TASK_LCD_TIME = get_clock_ticks()+450;
     Lcd_Data.vLCD_init();   //LCD初始化
     Led_Data.vLED_init();   //LED初始化
     Key_Data.vKEY_init();   //按键初始化

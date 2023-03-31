@@ -7,6 +7,7 @@
  */
 #include "xiaochuang.h"
 
+uint8_t ucXiaoChuang_rouse_arr[5] = {0xFA, 0xFA, 0xFA, 0xFA, 0xA1};	//小创唤醒词
 
 //初始化结构体数据
 XIAOCHUANG_TypeDef XiaoChuangData =
@@ -18,7 +19,9 @@ XIAOCHUANG_TypeDef XiaoChuangData =
     .vUART4_init = &vUART4_init,
     .vXIAOCHUANG_order_parse = &vXIAOCHUANG_order_parse,
     .vXIAOCHUANG_state_function = &vXIAOCHUANG_state_function,
-    .vXIAOCHUANG_play_specify_content = &vXIAOCHUANG_play_specify_content
+    .vXIAOCHUANG_play_specify_content = &vXIAOCHUANG_play_specify_content,
+    .vXIAOCHUANG_send_rouse = &vXIAOCHUANG_send_rouse,
+    .vUART4_rx_data_function = &vUART4_rx_data_function
 };
 
 //串口4初始化
@@ -28,67 +31,57 @@ void vUART4_init(void)
 
     ls1x_uart_init(devUART4,(void *)BaudRate); //初始化串口
     ls1x_uart_open(devUART4,NULL); //打开串口
-    ls1x_disable_gpio_interrupt(USART4_GPIO);   //失能GPIO中断
-    //端口号，上升沿触发，中断函数名，NULL
-    ls1x_install_gpio_isr(USART4_GPIO,INT_TRIG_EDGE_UP,vUART4_IRQhandler,NULL); //中断初始化
-    ls1x_enable_gpio_interrupt(USART4_GPIO);    //使能GPIO中断
 }
 
 /*
-功能：串口4中断函数
+功能：串口4接收函数
 小创播报后回传命令格式：55 02 01 00(帧头 数据类型 状态标志 数据位 ----帧头固定的后面3位可自定义)
 uart6_flag执行顺序：0x00-->0x01-->0x02-->0x03-->0x00...以此循环
 */
-void vUART4_IRQhandler(int IRQn,void* param)
+void vUART4_rx_data_function(void)
 {
     static uint8_t timing_flag = 0;  //时序
+    static uint8_t rx_count = 0;
 
-    ls1x_uart_read(devUART4,XiaoChuangData.UART4_RX_BUFF,UART4_RX_MAX_LEN,NULL);  //接收数据,返回值是读取的字节数
+    rx_count = ls1x_uart_read(devUART4,XiaoChuangData.UART4_RX_BUFF,UART4_RX_MAX_LEN,NULL);  //接收数据,返回值是读取的字节数
 
-    if(0x55 == XiaoChuangData.UART4_RX_BUFF[0])
+    if(rx_count > 0)
     {
-        timing_flag = 1;
-
-    }
-    switch(timing_flag)
-    {
-        case 1: //帧头
+        if (timing_flag == 0x00)
+        {
+            if (XiaoChuangData.UART4_RX_BUFF[0] == 0x55)				// 自定义数据帧头
             {
-                XiaoChuangData.Rx_Data[0] = XiaoChuangData.UART4_RX_BUFF[0];
-                timing_flag = 2;
-                break;
+                timing_flag = 0x01;
+                XiaoChuangData.Rx_Data[0] = XiaoChuangData.UART4_RX_BUFF[0];	// 帧头
+                XiaoChuangData.Rx_Data[1] = 0x00;
+                XiaoChuangData.Rx_Data[2] = 0x00;
+                XiaoChuangData.Rx_Data[3] = 0x00;
             }
-        case 2: //0xFF
-            {
-                XiaoChuangData.Rx_Data[1] = XiaoChuangData.UART4_RX_BUFF[0];
-                timing_flag = 3;
-                break;
-            }
-        case 3: //数据类型
-            {
-                XiaoChuangData.Rx_Data[2] = XiaoChuangData.UART4_RX_BUFF[0];
-                timing_flag = 4;
-                break;
-            }
-        case 4: //0xFF
-            {
-                timing_flag = 5;
-                XiaoChuangData.Rx_Data[3] = XiaoChuangData.UART4_RX_BUFF[0];
-                break;
-            }
-        case 5: //状态标志
-            {
-                timing_flag = 0;    //新的一轮
-                XiaoChuangData.UART4_Rx_Over_Flag = 1; //接收完成
-                XiaoChuangData.Rx_Data[4] = XiaoChuangData.UART4_RX_BUFF[0];
-                memset(XiaoChuangData.UART4_RX_BUFF,0,sizeof(XiaoChuangData.UART4_RX_BUFF));  //清0
-#if 0
-                printk("%#x--%#x--%#x--%#x--%#x\r\n",Rx_Data[0],Rx_Data[1],Rx_Data[2],Rx_Data[3],Rx_Data[4]);
-#endif
-                break;
-            }
-        default:
-            break;
+        }
+        else if (timing_flag == 0x01)
+        {
+            timing_flag = 0x02;
+            XiaoChuangData.Rx_Data[1] = XiaoChuangData.UART4_RX_BUFF[0];		// 数据类型
+        }
+        else if(timing_flag == 0x02)
+        {
+            timing_flag = 0x03;
+            XiaoChuangData.Rx_Data[2] = XiaoChuangData.UART4_RX_BUFF[0];		// 状态标志
+        }
+        else if(timing_flag == 0x03)
+        {
+            timing_flag = 0x00;
+            XiaoChuangData.Rx_Data[3] = XiaoChuangData.UART4_RX_BUFF[0];		// 数据位
+            XiaoChuangData.UART4_Rx_Over_Flag = 1; //接收完成
+            memset(XiaoChuangData.UART4_RX_BUFF,0,sizeof(XiaoChuangData.UART4_RX_BUFF));  //清0
+        }
+        else    //不会执行到这
+        {
+            timing_flag = 0x00;
+            XiaoChuangData.UART4_Rx_Over_Flag = 0; 
+            XiaoChuangData.Rx_Data[0] = 0x00;
+            memset(XiaoChuangData.UART4_RX_BUFF,0,sizeof(XiaoChuangData.UART4_RX_BUFF));  //清0
+        }
     }
 }
 
@@ -104,6 +97,10 @@ void vUART4_IRQhandler(int IRQn,void* param)
 任务八启动::好的，任务八启动:55020800
 任务九启动::好的，任务九启动:55020900
 任务十启动::好的，任务十启动:55020A00
+砺练能力::识别成功，砺练能力:55020B00
+交流技艺::识别成功，交流技艺:55020C00
+超越自我::识别成功，超越自我:55020D00
+勇攀高峰::识别成功，勇攀高峰:55020E00
 */
 
 /*
@@ -117,10 +114,10 @@ void vXIAOCHUANG_order_parse(void)
     if (XiaoChuangData.UART4_Rx_Over_Flag)
     {
         XiaoChuangData.UART4_Rx_Over_Flag = 0;
-        
-        if(0x02 == XiaoChuangData.Rx_Data[2]) //数据类型
+
+        if(0x02 == XiaoChuangData.Rx_Data[1]) //数据类型
         {
-            switch(XiaoChuangData.Rx_Data[4])    //状态标志
+            switch(XiaoChuangData.Rx_Data[2])    //状态标志
             {
                 case 0x01:
                     {
@@ -172,11 +169,31 @@ void vXIAOCHUANG_order_parse(void)
                         XiaoChuangData.XiaoChuang_return_state = 10;
                         break;
                     }
+                case 0x0B:
+                    {
+                        XiaoChuangData.XiaoChuang_return_state = 11;
+                        break;
+                    }
+                case 0x0C:
+                    {
+                        XiaoChuangData.XiaoChuang_return_state = 12;
+                        break;
+                    }
+                case 0x0D:
+                    {
+                        XiaoChuangData.XiaoChuang_return_state = 13;
+                        break;
+                    }
+                case 0x0E:
+                    {
+                        XiaoChuangData.XiaoChuang_return_state = 14;
+                        break;
+                    }
                 default:
                     break;
             }
         }
-        else if(0x03 == XiaoChuangData.Rx_Data[2]) //数据类型【主要判断asrWordlist.txt里的】
+        else if(0x03 == XiaoChuangData.Rx_Data[2]) //数据类型【主要判断serialTTS.txt里的】
         {
             ;
         }
@@ -193,30 +210,21 @@ void vXIAOCHUANG_state_function(void)
     {
         case 1:
             {
-                //memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
-                //snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"实践锻炼能力");
-                //Lcd_Data.Lcd_Display2_Flag = 1; //LCD刷新
+                auto_task1();   //任务1
                 break;
             }
         case 2:
             {
-                //memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
-                //snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"比赛彰显才智");
-                //Lcd_Data.Lcd_Display2_Flag = 1; //LCD刷新
                 break;
             }
         case 3:
             {
-                //memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
-                //snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"技能成就人生");
-                //Lcd_Data.Lcd_Display2_Flag = 1; //LCD刷新
+                auto_task3();   //任务3
                 break;
             }
         case 4:
             {
-                //memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
-                //snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"人才创造世界");
-                //Lcd_Data.Lcd_Display2_Flag = 1; //LCD刷新
+                auto_task4();
                 break;
             }
         case 5:
@@ -243,6 +251,38 @@ void vXIAOCHUANG_state_function(void)
             {
                 break;
             }
+        case 11:
+            {
+                memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
+                snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"砺练能力");
+                //Lcd_Data.Lcd_Display4_Flag = 1; //LCD刷新
+                GuiRowText(0,0+300,400, FONT_LEFT,(uint8_t*)Lcd_xiaochuang_identify_display_str);
+                break;
+            }
+        case 12:
+            {
+                memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
+                snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"交流技艺");
+                //Lcd_Data.Lcd_Display4_Flag = 1; //LCD刷新
+                GuiRowText(0,0+300,400, FONT_LEFT,(uint8_t*)Lcd_xiaochuang_identify_display_str);
+                break;
+            }
+        case 13:
+            {
+                memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
+                snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"超越自我");
+                //Lcd_Data.Lcd_Display4_Flag = 1; //LCD刷新
+                GuiRowText(0,0+300,400, FONT_LEFT,(uint8_t*)Lcd_xiaochuang_identify_display_str);
+                break;
+            }
+        case 14:
+            {
+                memset(Lcd_xiaochuang_identify_display_str,0,sizeof(Lcd_xiaochuang_identify_display_str));
+                snprintf(Lcd_xiaochuang_identify_display_str,sizeof(Lcd_xiaochuang_identify_display_str),"勇攀高峰");
+                //Lcd_Data.Lcd_Display4_Flag = 1; //LCD刷新
+                GuiRowText(0,0+300,400, FONT_LEFT,(uint8_t*)Lcd_xiaochuang_identify_display_str);
+                break;
+            }
         default:
             break;
     }
@@ -263,5 +303,14 @@ void vXIAOCHUANG_play_specify_content(int id)
     int ID_number = id;
     ls1x_uart_write(devUART4,&ID_number,1,NULL);    //发送一个字节
 }
+
+/*
+功能：发送小创唤醒
+*/
+void vXIAOCHUANG_send_rouse(void)
+{
+    ls1x_uart_write(devUART4,&ucXiaoChuang_rouse_arr,sizeof(ucXiaoChuang_rouse_arr),NULL);    //发送唤醒
+}
+
 
 

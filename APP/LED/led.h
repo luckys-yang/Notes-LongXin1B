@@ -15,6 +15,7 @@ typedef struct
     uint8_t Blue_Led;
     void (*vLED_init)(void);
     void (*vLED_control)(uint8_t,uint8_t);
+    void (*vLED_breathing_light)(uint8_t);
 }LED_TypeDef;
 
 extern LED_TypeDef Led_Data;
@@ -22,4 +23,5 @@ extern LED_TypeDef Led_Data;
 
 void vLED_init(void);
 void vLED_control(uint8_t led_color,uint8_t swch);
+void vLED_breathing_light(uint8_t color_led);
 #endif

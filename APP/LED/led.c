@@ -14,7 +14,8 @@ LED_TypeDef Led_Data =
     .Green_Led =LED2,
     .Blue_Led = LED3,
     .vLED_init = &vLED_init,
-    .vLED_control = &vLED_control
+    .vLED_control = &vLED_control,
+    .vLED_breathing_light = &vLED_breathing_light
 };
 
 //LED初始化
@@ -44,3 +45,39 @@ void vLED_control(uint8_t led_color,uint8_t swch)
         gpio_write(led_color,RESET);
     }
 }
+
+bool Led_run_Flag = 0;  //LED呼吸灯运行标志位
+
+/*
+功能：呼吸灯
+参数：哪个颜色的灯
+*/
+void vLED_breathing_light(uint8_t color_led)
+{
+    static uint8_t MENU = 0,flag = 1;
+    static uint16_t t = 1,i = 0;
+    while(Led_run_Flag)
+    {
+        for(i=0; i<10; i++)
+        {
+            Led_Data.vLED_control(color_led,SET);
+            delay_us(t);
+            Led_Data.vLED_control(color_led,RESET);
+            delay_us(601-t);
+        }
+        if(flag==1)
+        {
+            t++;
+            if(t==600)
+                flag=0;
+        }
+        else if(flag==0)
+        {
+            t--;
+            if(t==1)
+                flag=1;
+        }
+    }
+}
+
+

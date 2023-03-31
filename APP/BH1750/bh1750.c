@@ -18,7 +18,8 @@ BH1750_TypeDef Bh1750_Data =
     .vBH1750_start = &vBH1750_start,
     .vBH1750_read = &vBH1750_read,
     .vBH1750_convert_data = &vBH1750_convert_data,
-    .vBH1750_whole_get_data = &vBH1750_whole_get_data
+    .vBH1750_whole_get_data = &vBH1750_whole_get_data,
+    .vBH1750_run_function = &vBH1750_run_function
 };
 
 /*
@@ -88,3 +89,20 @@ void vBH1750_whole_get_data(void)
     Bh1750_Data.vBH1750_read(); //连续读取
     Bh1750_Data.vBH1750_convert_data(); //合成
 }
+
+/*
+根据光强度执行对应功能
+*/
+void vBH1750_run_function(void)
+{
+    if(Bh1750_Data.Bh1750_value <= 100)
+    {
+        Led_Data.vLED_control(Led_Data.Red_Led,SET);    //红亮
+    }
+    else
+    {
+        Led_Data.vLED_control(Led_Data.Red_Led,RESET);    //红灭
+    }
+}
+
+

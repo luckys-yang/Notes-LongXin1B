@@ -31,7 +31,11 @@ void vTIM_rtc0_init(void)
 }
 
 uint8_t led_flag = 0;
-
+/*显示曲线图标志位*/
+extern bool LM35_Over_Flag;
+extern bool BH1750_Over_Flag;
+extern bool Lcd_display1_flag; //任务LCD刷新
+extern uint32_t Key_longtime;   //按键长按计数
 //定时器回调函数
 void rtctimer_callback(int device, unsigned match, int *stop)
 {
@@ -58,11 +62,11 @@ void rtctimer_callback(int device, unsigned match, int *stop)
         Time_300ms++;
         Time_500ms++;
         Time_1s++;
-
+        
         if(10 == Time_10ms) //10ms串口接收检测
         {
             Time_10ms = 0;
-            My_uart_Data.UART5_Over_Flag = 1;
+            //My_uart_Data.UART5_Over_Flag = 1;
         }
         if(20 == Time_20ms) //20ms按键检测
         {
@@ -74,10 +78,10 @@ void rtctimer_callback(int device, unsigned match, int *stop)
             Time_50ms = 0;
             XiaoChuangData.vXIAOCHUANG_order_parse();
         }
-        if(100 == Time_100ms) 
+        if(100 == Time_100ms) //
         {
             Time_100ms = 0;
-            
+            Key_longtime++;
             
         }
         if(120 == Time_120ms)   //120ms读取一次光度值
@@ -85,16 +89,17 @@ void rtctimer_callback(int device, unsigned match, int *stop)
             Time_120ms = 0;
             Bh1750_Data.vBH1750_whole_get_data();
             Lcd_Data.Lcd_Display3_Flag = 1;
+            //BH1750_Over_Flag = 1;   //曲线图光度传感器刷新标志位
         }
         if(150 == Time_150ms)   //150ms采集一次电子罗盘角度
         {
             Time_150ms = 0;
-            Hmc5883l_Data.Hmc5883l_Over_Flag = 1;
+            //Hmc5883l_Data.Hmc5883l_Over_Flag = 1;
         }
         if(200 == Time_200ms)   //200ms运行一次RTC实时时钟
         {
             Time_200ms = 0;
-            myRtcData.MY_RTC_over_Flag = 1;
+            //myRtcData.MY_RTC_over_Flag = 1;
         }
         if(300 == Time_300ms)
         {
@@ -106,14 +111,15 @@ void rtctimer_callback(int device, unsigned match, int *stop)
             Time_500ms = 0;
             Lm35_Data.fLM35_get_temperature();
             Lcd_Data.Lcd_Display1_Flag = 1;
-            led_flag = !led_flag;
-            Led_Data.vLED_control(Led_Data.Green_Led,led_flag); //led运行正常
+            LM35_Over_Flag = 1; //曲线图温度刷新标志位
+            //led_flag = !led_flag;
+            //Led_Data.vLED_control(Led_Data.Green_Led,led_flag); //led运行正常
         }
         if(1000 == Time_1s) //1s计算一次电机转速
         {
             Time_1s = 0;
-            Motor_Data.vMOTOR_calculate_minute_speed();
-            Lcd_Data.Lcd_Display2_Flag = 1;
+            //Motor_Data.vMOTOR_calculate_minute_speed();
+            //Lcd_Data.Lcd_Display2_Flag = 1;
         }
     }
 }

@@ -12,7 +12,8 @@ LM35_TypeDef Lm35_Data =
 {
     .Lm35_temp = 0.0,
     .vLM35_init = &vLM35_init,
-    .fLM35_get_temperature = &fLM35_get_temperature
+    .fLM35_get_temperature = &fLM35_get_temperature,
+    .vLM35_run_function = &vLM35_run_function
 };
 
 //初始化
@@ -36,4 +37,15 @@ float fLM35_get_temperature(void)
     return temp;
 }
 
+/*
+功能：根据温度执行
+*/
+void vLM35_run_function(void)
+{
+    if(Lm35_Data.Lm35_temp >= 30)
+    {
+        XiaoChuangData.vXIAOCHUANG_play_specify_content(3); //当前温度过高
+       // delay_ms(1000);
+    }
+}
 

@@ -4,7 +4,7 @@
 
 //定义管脚
 #define USART4_GPIO 58
-#define UART4_RX_MAX_LEN 30 //接收最大长度
+#define UART4_RX_MAX_LEN 100 //接收最大长度
 
 typedef struct
 {
@@ -16,15 +16,19 @@ typedef struct
     void (*vXIAOCHUANG_order_parse)(void);
     void (*vXIAOCHUANG_state_function)(void);
     void (*vXIAOCHUANG_play_specify_content)(int);
+    void (*vXIAOCHUANG_send_rouse)(void);
+    void (*vUART4_rx_data_function)(void);
 } XIAOCHUANG_TypeDef;
 
 extern XIAOCHUANG_TypeDef XiaoChuangData;
+extern uint8_t ucXiaoChuang_rouse_arr[5];
 
 void vUART4_init(void);
-void vUART4_IRQhandler(int IRQn,void* param);
+void vUART4_rx_data_function(void);
 void vXIAOCHUANG_order_parse(void);
 void vXIAOCHUANG_state_function(void);
 void vXIAOCHUANG_play_specify_content(int id);
+void vXIAOCHUANG_send_rouse(void);
 #endif
 
 

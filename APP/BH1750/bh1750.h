@@ -19,6 +19,7 @@ typedef struct
     void (*vBH1750_read)(void);
     float (*vBH1750_convert_data)(void);
     void (*vBH1750_whole_get_data)(void);
+    void (*vBH1750_run_function)(void);
 }BH1750_TypeDef;
 
 extern BH1750_TypeDef Bh1750_Data;
@@ -29,6 +30,7 @@ void vBH1750_start(void);
 void vBH1750_read(void);
 float vBH1750_convert_data(void);
 void vBH1750_whole_get_data(void);
+void vBH1750_run_function(void);
 #endif
 
 

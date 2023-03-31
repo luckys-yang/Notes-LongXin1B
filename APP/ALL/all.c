@@ -16,11 +16,14 @@ extern unsigned int get_clock_ticks(void);
 extern int printk(const char* format, ...);
 //LCD清屏
 extern void fb_cons_clear(void);
+//画有颜色的矩形
+extern void fb_drawrect(int x1, int y1, int x2, int y2, unsigned coloridx);
 //填充矩形(常用于刷新需要变化的数据，坐标和显示文本坐标一致)
 extern void fb_fillrect(int x1, int y1, int x2, int y2, unsigned coloridx);
 //输出文本
 extern void fb_textout(int x, int y, char *str);
-
+//在LCD[x,y]处用指定颜色、宽度画点(宽度越大点越大)
+extern void fb_drawpoint(int x, int y, int thickness, unsigned coloridx);
 /*SYS FUNCTION END*/
 
 /*GUI FUNCTION BEGIN*/
@@ -31,6 +34,12 @@ extern void GuiRowText(lkdCoord x, lkdCoord y,uint16_t wide, FontFlag flag,uint8
 //#define GuiClearScreen(color) GuiFillRect(0, 0, GUIXMAX - 1,GUIXMAX - 1,color);
 
 /*GUI FUNCTION END*/
+
+TASK_TypeDef TaskData =
+{
+    .TASK_LCD_TIME = 0,
+};
+
 
 
 //任务1.1
@@ -240,4 +249,263 @@ void Task_7(void)
     delay_ms(500);
     delay_ms(500);
 }
+
+bool LM35_Over_Flag = 0;
+bool BH1750_Over_Flag = 0;
+
+/*显示坐标初始化*/
+void Coord_init(void)
+{
+    uint16_t i = 0;
+    char arr[50];
+    static num1 = 15;   //15s 500ms*30
+
+    snprintf(arr,sizeof(arr),"(s)");
+    fb_put_string(0,370,arr,Lcd_Data.Lcd_cid_color[6]);
+    for(i = 0; i <=730;)
+    {
+        snprintf(arr,sizeof(arr),"%d",num1);
+        fb_put_string(i+30,370,arr,Lcd_Data.Lcd_cid_color[6]);//显示x轴时间
+        fb_drawpoint(i+40,350,20,Lcd_Data.Lcd_cid_color[7]);    //显示点
+        i+=30;
+        num1 += 15;
+    }
+    fb_drawline(0,350,800,350,Lcd_Data.Lcd_cid_color[7]);   //画x轴(白色)
+    fb_drawline(0,20,0,350,Lcd_Data.Lcd_cid_color[7]);   //画y轴(白色)
+}
+/*
+显示数据
+*/
+void Coord_display_date(void)
+{
+    if(LM35_Over_Flag)  //温度
+    {
+        char arr1[50];
+        static int x1 = 0;
+        static int y1 = 200;
+        static float last_temp = 0;
+
+        LM35_Over_Flag = 0;
+
+        /*显示温度*/
+        fb_fillrect(100,400,260,450, cidxBLACK);
+        snprintf(arr1,sizeof(arr1),"当前温度:%.1f°",Lm35_Data.Lm35_temp);
+        fb_put_string(100,400,arr1,Lcd_Data.Lcd_cid_color[4]);
+        if(Lm35_Data.Lm35_temp > last_temp)
+        {
+            y1--;
+        }
+        else if(Lm35_Data.Lm35_temp < last_temp)
+        {
+            y1++;
+        }
+        else
+        {
+            y1 = y1;
+        }
+        x1++;
+
+        fb_drawpoint(x1,y1,7,Lcd_Data.Lcd_cid_color[4]);
+        last_temp = Lm35_Data.Lm35_temp;
+
+
+        if(BH1750_Over_Flag)
+        {
+            char arr2[50];
+            static int x2 = 0;
+            static int y2 = 210;
+            static float last_temp2 = 0;
+
+            BH1750_Over_Flag = 0;
+            /*显示光度值*/
+            fb_fillrect(400,400,760,450, cidxBLACK);
+            snprintf(arr2,sizeof(arr2),"当前光度值:%.0f lx",Bh1750_Data.Bh1750_value);
+            fb_put_string(400,400,arr2,Lcd_Data.Lcd_cid_color[1]);
+            if(Bh1750_Data.Bh1750_value > last_temp2)
+            {
+                y2--;
+            }
+            else if(Bh1750_Data.Bh1750_value < last_temp2)
+            {
+                y2++;
+            }
+            else
+            {
+                y2 = y2;
+            }
+            x2++;
+            fb_drawpoint(x2,y2,7,Lcd_Data.Lcd_cid_color[1]);
+            last_temp2 = Bh1750_Data.Bh1750_value;
+        }
+        if(730 == x1)
+        {
+            fb_cons_clear();
+            Coord_init();
+        }
+    }
+}
+
+/*****************************************任务***********************************/
+
+//任务1
+void auto_task1(void)
+{
+    Task_1_1();
+    delay_ms(1000);
+    //渐变待写
+}
+//任务2
+void auto_task2(void)
+{
+    static uint8_t key1_temp_flag = 0;
+    if(Key_Data.Key1_Down_Flag)
+    {
+        Key_Data.Key1_Down_Flag = 0;
+        key1_temp_flag = !key1_temp_flag;
+    }
+    if(key1_temp_flag)
+    {
+        Buzzer_Data.vBUZZER_control(SET);
+    }
+    else
+    {
+        Buzzer_Data.vBUZZER_control(RESET);
+    }
+}
+
+//任务3
+
+void auto_task3(void)
+{
+    //1
+    uint16_t count1 = 0;
+    uint32_t ms_count1 = get_clock_ticks()+3000;  //获取当前时间+3000 3s
+    bool flag1 = 1;
+    while(count1 < 2)
+    {
+        // 每隔3000个倒计时周期刷新显示
+        if(get_clock_ticks() > ms_count1)
+        {
+            ms_count1=get_clock_ticks()+3000;
+            flag1 = !flag1;   //取反
+            count1++;
+        }
+        if(flag1)
+        {
+            Smg_Data.vSMG_display("2023");
+        }
+        else
+        {
+            Smg_Data.vSMG_display("0402");
+        }
+    }
+    Smg_Data.vSMG_off();    //数码管全灭
+    delay_ms(3000);
+    //2
+    uint8_t count2 = 6;
+    char arr1[5] = "-05-";
+    uint32_t ms_count2 = get_clock_ticks()+1000;  //获取当前时间+1000 1s;
+
+    while(count2 > 0)
+    {
+        Smg_Data.vSMG_display((uint8_t*)arr1);
+        // 每隔1000个倒计时周期刷新显示
+        if(get_clock_ticks() > ms_count1)
+        {
+            ms_count1=get_clock_ticks()+1000;
+            count2--;
+            snprintf(arr1,sizeof(arr1),"-%02d-",count2);
+        }
+
+    }
+
+    //3
+    uint8_t num1 = 3;
+    bool flag2 = 1;
+    uint32_t ms_count3 = get_clock_ticks()+500; //500ms
+    while(num1 > 0)
+    {
+        if(flag2)
+        {
+            Smg_Data.vSMG_display("-FF-");
+            Led_Data.vLED_control(Led_Data.Green_Led,SET);
+            Buzzer_Data.vBUZZER_control(SET);
+            if(get_clock_ticks() > ms_count3)
+            {
+                ms_count3 = get_clock_ticks()+500;
+                flag2 = !flag2;
+            }
+        }
+        else
+        {
+            Smg_Data.vSMG_off();    //数码管全灭
+            Led_Data.vLED_control(Led_Data.Green_Led,RESET);
+            Buzzer_Data.vBUZZER_control(RESET);
+            if(get_clock_ticks() > ms_count3)
+            {
+                ms_count3 = get_clock_ticks()+500;
+                flag2 = !flag2;
+                num1--;
+            }
+        }
+    }
+    /*最后全部熄灭*/
+    Smg_Data.vSMG_off();    //数码管全灭
+    Led_Data.vLED_control(Led_Data.Green_Led,RESET);
+    Buzzer_Data.vBUZZER_control(RESET);
+}
+
+//任务4
+void auto_task4(void)
+{
+    GuiClearScreen(CBLACK);  //清屏
+    fb_cons_clear();    //清屏
+    delay_ms(200);
+    GuiRowText(0,0+500,480, FONT_LEFT,(uint8_t*)"技能成就人生，人才创造世界");
+    delay_ms(5000);
+    fb_drawrect(300,200,500,250,Lcd_Data.Lcd_cid_color[4]);  //红色矩形框200 X 50
+    Lcd_Data.vLCD_gui_pentagram(60,200,50,CBLACK);  //五角星
+    delay_ms(8000);
+    GuiClearScreen(CBLACK);  //清屏
+    fb_cons_clear();    //清屏
+}
+bool Lcd_display1_flag = 0; //LCD刷新标志位
+//任务5
+void auto_task5(void)
+{
+    static uint8_t Control_display_flag = 0;
+
+    if(Key_Data.Key2_Down_Flag) //按键2控制是否显示
+    {
+        Key_Data.Key2_Down_Flag = 0;
+        Lcd_Data.Lcd_open_Flag = !Lcd_Data.Lcd_open_Flag;
+    }
+}
+
+//任务6
+void auto_task6(void)
+{
+    if(Key_Data.Key3_Down_Flag) //按键3
+    {
+        Key_Data.Key3_Down_Flag = 0;
+        GuiClearScreen(CBLACK);  //清屏
+        fb_cons_clear();    //清屏
+        XiaoChuangData.vXIAOCHUANG_play_specify_content(4); //播报"技能改变人生，技能成就梦想"
+    }
+    if(Key_Data.Key4_Down_Flag) //按键4
+    {
+        Key_Data.Key4_Down_Flag = 0;
+        XiaoChuangData.vXIAOCHUANG_send_rouse();    //发送唤醒
+    }
+}
+
+void Task_while(void)
+{
+    auto_task2();
+    auto_task5();
+    auto_task6();
+}
+
+
+
 

@@ -118,7 +118,7 @@ extern void GuiUpdateDisplayAll(void);
 /* 刷新指定范围缓存到lcd */
 extern void GuiRangeUpdateDisplay(lkdCoord beginx, lkdCoord beginy,lkdCoord endx, lkdCoord endy);
 /* 画点到缓存 */
-extern void GuiDrawPoint(lkdCoord x, lkdCoord y, lkdColour color);
+ extern void GuiDrawPoint(lkdCoord x, lkdCoord y, lkdColour color);
 /* 从硬件设备读点 */
 extern void GuiReadPoint(lkdCoord x, lkdCoord y, lkdColour *pColor);
 

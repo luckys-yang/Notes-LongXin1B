@@ -12,7 +12,8 @@ APP/BH1750/bh1750_i2c.o APP/BH1750/bh1750_i2c.o: \
  ../ls1x-drv/include/ls1x_rtc.h ../ls1x-drv/include/ls1x_i2c_bus.h \
  ../core/include/ls1b_irq.h ../ls1x-drv/include/i2c/ads1015.h \
  ../ls1x-drv/include/ls1x_io.h ../ls1x-drv/include/i2c/gp7101.h \
- ../libc/lwmem.h ../ls1x-drv/include/ls1x_pwm.h ../APP/TIM/tim.h \
+ ../libc/lwmem.h ../ls1x-drv/include/ls1x_pwm.h \
+ ../src/lkdGui_source/include/lkdGuiTypedef.h ../APP/TIM/tim.h \
  ../APP/LED/led.h ../APP/KEY/key.h ../APP/BUZZER/buzzer.h \
  ../APP/SMG/smg.h ../APP/LCD/lcd.h ../APP/XIAOCHUANG/xiaochuang.h \
  ../APP/LM35/lm35.h ../APP/RESISTOR/resistor.h ../APP/FAN/fan.h \
@@ -72,6 +73,8 @@ APP/BH1750/bh1750_i2c.o APP/BH1750/bh1750_i2c.o: \
 ../libc/lwmem.h:
 
 ../ls1x-drv/include/ls1x_pwm.h:
+
+../src/lkdGui_source/include/lkdGuiTypedef.h:
 
 ../APP/TIM/tim.h:
 

@@ -21,6 +21,8 @@ typedef struct
     void (*vHC595_send_data)(uint8_t);
     void (*vSMG_choose)(uint8_t);
     void (*vSMG_countdown)(uint16_t);
+    void (*vSMG_display)(uint8_t*);
+    void (*vSMG_off)(void);
     
 }SMG_TypeDef;
 
@@ -33,5 +35,7 @@ void vSMG_init(void);
 void vHC595_send_data(uint8_t dat);
 void vSMG_choose(uint8_t index);
 void vSMG_countdown(uint16_t init_value);
+void vSMG_display(uint8_t *str);
+void vSMG_off(void);
 #endif
 

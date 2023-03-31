@@ -5,15 +5,19 @@
  *  author: Yang
  *  module: 按键
  */
- 
+
 #include "key.h"
 
 static uint8_t Key_Up,Key_Down,Key_Value;
-
+uint32_t Key_longtime = 0;
 
 //初始化结构体
 KEY_TypeDef Key_Data =
 {
+    .Key1_Down_Long_Flag = 0,
+    .Key2_Down_Long_Flag = 0,
+    .Key3_Down_Long_Flag = 0,
+    .Key4_Down_Long_Flag = 0,
     .Key1_Down_Flag = 0,
     .Key2_Down_Flag = 0,
     .Key3_Down_Flag = 0,
@@ -58,41 +62,81 @@ uint8_t ucKEY_sub(void)
     return 0;
 }
 
+
+extern bool Led_run_Flag;   //LED呼吸灯运行标志位
+
 //按键检测
 void vKEY_detection(void)
 {
     static uint8_t Key_Old;
-    
+
     Key_Value = Key_Data.ucKEY_sub();
     Key_Up = ~Key_Value & (Key_Old^Key_Value);
     Key_Down = Key_Value & (Key_Old^Key_Value);
     Key_Old = Key_Value;
-    
-    switch(Key_Up)
+
+    if(Key_Down)
     {
-        case 1:
-            {
-                Key_Data.Key1_Down_Flag = 1;
-                break;
-            }
-        case 2:
-            {
-                Key_Data.Key2_Down_Flag = 1;
-                break;
-            }
-        case 3:
-            {
-                Key_Data.Key3_Down_Flag = 1;
-                break;
-            }
-        case 4:
-            {
-                Key_Data.Key4_Down_Flag = 1;
-                break;
-            }
+        Key_longtime = 0;
+    }
+
+    if(Key_longtime < 10)
+    {
+        switch(Key_Up)
+        {
+            case 1:
+                {
+                    Key_Data.Key1_Down_Flag = 1;
+                    break;
+                }
+            case 2:
+                {
+                    Key_Data.Key2_Down_Flag = 1;
+                    //Led_run_Flag = !Led_run_Flag;
+                    break;
+                }
+            case 3:
+                {
+                    Key_Data.Key3_Down_Flag = 1;
+                    break;
+                }
+            case 4:
+                {
+                    Key_Data.Key4_Down_Flag = 1;
+                    break;
+                }
             default:
                 break;
+        }
     }
+    else    //长按
+    {
+        switch(Key_Value)
+        {
+            case 1:
+                {
+                    Key_Data.Key1_Down_Long_Flag = 1;
+                    break;
+                }
+            case 2:
+                {
+                    Key_Data.Key2_Down_Long_Flag = 1;
+                    break;
+                }
+            case 3:
+                {
+                    Key_Data.Key3_Down_Long_Flag = 1;
+                    break;
+                }
+            case 4:
+                {
+                    Key_Data.Key4_Down_Long_Flag = 1;
+                    break;
+                }
+                default:break;
+        }
+    }
+
 }
 
 extern uint8_t threshold;
@@ -102,17 +146,14 @@ uint8_t i = 0;
 //按键功能执行
 void vKEY_function(void)
 {
+    /*短按*/
     if(Key_Data.Key1_Down_Flag)
     {
         Key_Data.Key1_Down_Flag = 0;
-        set_lcd_brightness(100);
     }
     if(Key_Data.Key2_Down_Flag)
     {
         Key_Data.Key2_Down_Flag = 0;
-        i++;
-        vMOTOR_set_speed(i);
-        printk("ddd--%d\r\n",i);
     }
     if(Key_Data.Key3_Down_Flag)
     {
@@ -121,7 +162,23 @@ void vKEY_function(void)
     if(Key_Data.Key4_Down_Flag)
     {
         Key_Data.Key4_Down_Flag = 0;
-        vMOTOR_set_speed(0);
+    }
+    /*长按*/
+    if(Key_Data.Key1_Down_Long_Flag)
+    {
+        Key_Data.Key1_Down_Long_Flag = 0;
+    }
+    if(Key_Data.Key2_Down_Long_Flag)
+    {
+        Key_Data.Key2_Down_Long_Flag = 0;
+    }
+    if(Key_Data.Key3_Down_Long_Flag)
+    {
+        Key_Data.Key3_Down_Long_Flag = 0;
+    }
+    if(Key_Data.Key4_Down_Long_Flag)
+    {
+        Key_Data.Key4_Down_Long_Flag = 0;
     }
 }
 

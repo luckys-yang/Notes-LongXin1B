@@ -15,6 +15,10 @@
 
 typedef struct
 {
+    bool Key1_Down_Long_Flag;
+    bool Key2_Down_Long_Flag;
+    bool Key3_Down_Long_Flag;
+    bool Key4_Down_Long_Flag;
     bool Key1_Down_Flag;
     bool Key2_Down_Flag;
     bool Key3_Down_Flag;

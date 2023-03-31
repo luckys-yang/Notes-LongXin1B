@@ -4,6 +4,7 @@
 
 typedef struct
 {
+    bool Lcd_open_Flag; //打开显示LCD标志位
     uint32_t Lcd_cl_color[8];    //清屏颜色(32位)
     uint16_t Lcd_cid_color[9];   //字体颜色(16位)
     bool Lcd_Display8_Flag;  //LCD刷新【8】标志位
@@ -22,6 +23,10 @@ typedef struct
     void (*vLCD_display_text)(uint16_t,uint16_t,char*);
     void (*vLCD_disaplay_color_text)(uint16_t,uint16_t,char*,unsigned);
     void (*vLCD_display_gb2312_char)(uint16_t,uint16_t,char*);
+    void (*vLCD_gui_display_graphics)(uint8_t,uint8_t);
+    void (*vLCD_gui_equilateral_triangle)(lkdCoord, lkdCoord, lkdCoord, lkdColour);
+    void (*vLCD_gui_circle)(lkdCoord,lkdCoord,lkdCoord,lkdColour);
+    void (*vLCD_gui_pentagram)(lkdCoord,lkdCoord,lkdCoord,lkdColour);
     
 }LCD_TypeDef;
 
@@ -37,5 +42,9 @@ void vLCD_set_fgcolor(unsigned color_cidx, unsigned color_cl);//设置字体颜色
 void vLCD_display_text(uint16_t x1,uint16_t y1,char* str1);//指定坐标显示字符串
 void vLCD_disaplay_color_text(uint16_t x1,uint16_t y1,char* str1,unsigned color_cidx);//指定坐标颜色显示字符串
 void vLCD_display_gb2312_char(uint16_t x1,uint16_t y1,char *str1);//指定坐标显示一个汉字
+void vLCD_gui_display_graphics(uint8_t graphics_id,uint8_t wire_color); //画矩形、正方形
+void vLCD_gui_equilateral_triangle(lkdCoord x, lkdCoord y, lkdCoord r, lkdColour color);//画等边三角形
+void vLCD_gui_circle(lkdCoord x, lkdCoord y, lkdCoord r, lkdColour color);  //画圆
+void vLCD_gui_pentagram(lkdCoord x, lkdCoord y, lkdCoord size, lkdColour color);    //画五角星
 #endif
 
