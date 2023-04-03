@@ -204,31 +204,48 @@ void vXIAOCHUANG_order_parse(void)
 /*
 功能：根据小创回传命令状态XiaoChuang_return_state执行对应功能
 */
+//打开红灯::打开红灯:55020200
+//打开绿灯::打开绿灯:55020300
+//打开蓝灯::打开蓝灯:55020400
+//关闭灯光::关闭灯光:55020500
 void vXIAOCHUANG_state_function(void)
 {
+    char dis_arr3[30];
     switch(XiaoChuangData.XiaoChuang_return_state)
     {
-        case 1:
+        case 1: //温度采集显示
             {
-                auto_task1();   //任务1
+                snprintf(dis_arr3,sizeof(dis_arr3),"当前温度：%.2f℃    ",Lm35_Data.Lm35_temp);   //显示光度保留0位小数，后面空几个格避免显示乱码
+                GuiRowText(0,0+500,400, FONT_LEFT,(uint8_t*)dis_arr3);
                 break;
             }
         case 2:
             {
+                Led_Data.vLED_control(Led_Data.Blue_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Green_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Red_Led,SET);
                 break;
             }
         case 3:
             {
-                auto_task3();   //任务3
+                Led_Data.vLED_control(Led_Data.Blue_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Red_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Green_Led,SET);
+                
                 break;
             }
         case 4:
             {
-                auto_task4();
+                Led_Data.vLED_control(Led_Data.Red_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Green_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Blue_Led,SET);
                 break;
             }
         case 5:
             {
+                Led_Data.vLED_control(Led_Data.Red_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Green_Led,RESET);
+                Led_Data.vLED_control(Led_Data.Blue_Led,RESET);
                 break;
             }
         case 6:

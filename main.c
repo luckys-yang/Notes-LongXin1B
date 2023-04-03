@@ -26,8 +26,6 @@ char LCD_display_mode[] = LCD_800x480;
 char test_arr[30];
 
 #endif
-    static uint16_t cnt = 0;
-    static uint8_t dir = 1;
 
 int main(void)
 {
@@ -35,11 +33,15 @@ int main(void)
     ls1x_drv_init();            		/* Initialize device drivers */
     install_3th_libraries();      		/* Install 3th libraies */
 #endif
-
+    
     Hardware_Init();    //硬件初始化
+    
+    
     for (;;)
     {
+        Key_Data.vKEY_menu_display();   //菜单
         Key_Data.vKEY_function();
+        TaskData.vTASK_all();   //所有任务
         //XiaoChuangData.vUART4_rx_data_function();
         //XiaoChuangData.vXIAOCHUANG_state_function();
         //Task_while();
@@ -58,7 +60,7 @@ int main(void)
 */
 void Hardware_Init(void)
 {
-    TaskData.TASK_LCD_TIME = get_clock_ticks()+450;
+    //TaskData.TASK_LCD_TIME = get_clock_ticks()+450;
     Lcd_Data.vLCD_init();   //LCD初始化
     Led_Data.vLED_init();   //LED初始化
     Key_Data.vKEY_init();   //按键初始化

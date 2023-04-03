@@ -34,8 +34,9 @@ uint8_t led_flag = 0;
 /*显示曲线图标志位*/
 extern bool LM35_Over_Flag;
 extern bool BH1750_Over_Flag;
-extern bool Lcd_display1_flag; //任务LCD刷新
 extern uint32_t Key_longtime;   //按键长按计数
+
+
 //定时器回调函数
 void rtctimer_callback(int device, unsigned match, int *stop)
 {
@@ -62,7 +63,7 @@ void rtctimer_callback(int device, unsigned match, int *stop)
         Time_300ms++;
         Time_500ms++;
         Time_1s++;
-        
+
         if(10 == Time_10ms) //10ms串口接收检测
         {
             Time_10ms = 0;
@@ -89,7 +90,7 @@ void rtctimer_callback(int device, unsigned match, int *stop)
             Time_120ms = 0;
             Bh1750_Data.vBH1750_whole_get_data();
             Lcd_Data.Lcd_Display3_Flag = 1;
-            //BH1750_Over_Flag = 1;   //曲线图光度传感器刷新标志位
+            BH1750_Over_Flag = 1;   //曲线图光度传感器刷新标志位
         }
         if(150 == Time_150ms)   //150ms采集一次电子罗盘角度
         {

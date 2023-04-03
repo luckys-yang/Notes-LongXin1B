@@ -19,7 +19,7 @@ APP/TIM/tim.o APP/TIM/tim.o: ../APP/TIM/tim.c ../APP/TIM/tim.h \
  ../APP/BH1750/bh1750.h ../APP/HMC5883L/hmc5883l.h ../APP/MY_IIC/my_iic.h \
  ../APP/MOTOR/motor.h ../APP/MY_PWM/my_pwm.h \
  ../APP/ULTRASOUND/ultrasound.h ../APP/MY_UART/my_uart.h \
- ../APP/MY_RTC/my_rtc.h ../APP/MY_ADC/my_adc.h
+ ../APP/MY_RTC/my_rtc.h ../APP/MY_ADC/my_adc.h ../task.h
 
 ../APP/TIM/tim.h:
 
@@ -110,3 +110,5 @@ APP/TIM/tim.o APP/TIM/tim.o: ../APP/TIM/tim.c ../APP/TIM/tim.h \
 ../APP/MY_RTC/my_rtc.h:
 
 ../APP/MY_ADC/my_adc.h:
+
+../task.h:

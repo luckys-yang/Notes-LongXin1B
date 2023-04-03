@@ -35,10 +35,10 @@ extern void GuiRowText(lkdCoord x, lkdCoord y,uint16_t wide, FontFlag flag,uint8
 
 /*GUI FUNCTION END*/
 
-TASK_TypeDef TaskData =
-{
-    .TASK_LCD_TIME = 0,
-};
+//TASK_TypeDef TaskData =
+//{
+    //.TASK_LCD_TIME = 0,
+//};
 
 
 
@@ -347,20 +347,28 @@ void Coord_display_date(void)
 
 /*****************************************任务***********************************/
 
-//任务1
+
+/*
+任务1：
+    红亮1s灭 绿亮1s灭 蓝亮1s灭
+    红灯亮到灭再灭到亮，然后缓慢闪烁然后关闭
+*/
 void auto_task1(void)
 {
     Task_1_1();
     delay_ms(1000);
     //渐变待写
+    Led_Data.vLED_breathing_light(Led_Data.Red_Led);
 }
 //任务2
 void auto_task2(void)
 {
     static uint8_t key1_temp_flag = 0;
-    if(Key_Data.Key1_Down_Flag)
+    
+    
+    if(Key_Data.Key3_Down_Flag)
     {
-        Key_Data.Key1_Down_Flag = 0;
+        Key_Data.Key3_Down_Flag = 0;
         key1_temp_flag = !key1_temp_flag;
     }
     if(key1_temp_flag)
@@ -469,7 +477,7 @@ void auto_task4(void)
     GuiClearScreen(CBLACK);  //清屏
     fb_cons_clear();    //清屏
 }
-bool Lcd_display1_flag = 0; //LCD刷新标志位
+
 //任务5
 void auto_task5(void)
 {

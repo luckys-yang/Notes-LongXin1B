@@ -10,7 +10,7 @@ FiltersCount=0
 CompilerSet=SDE Lite 4.5.2 for MIPS
 ExtIncludes=
 RTOSName=Bare Program
-UnitCount=210
+UnitCount=212
 
 [McuAndBSP]
 UseRTEMS=0
@@ -30,7 +30,7 @@ GxxFileName=E:\LongXin\IDE\LoongIDE\mips-2011.03\bin\mips-sde-elf-gcc.exe
 GxxFlags=-mips32 -G0 -EL -msoft-float -DLS1B -DOS_NONE  -O0 -g -Wall -c -fmessage-length=0 -pipe
 PrepFlags=
 NoStdInc=0
-IncludePaths=./APP/ALL;./APP/BH1750;./APP/BUZZER;./APP/FAN;./APP/HMC5883L;./APP/KEY;./APP/LCD;./APP/LED;./APP/LM35;./APP/MOTOR;./APP/MY_ADC;./APP/MY_IIC;./APP/MY_PWM;./APP/MY_RTC;./APP/MY_UART;./APP/RESISTOR;./APP/SMG;./APP/TIM;./APP/ULTRASOUND;./APP/XIAOCHUANG;./core/include;./core/mips;./libc;./ls1x-drv/include;./src/lkdGui_source/include;./src/lkdGui_source/port
+IncludePaths=./;./APP/ALL;./APP/BH1750;./APP/BUZZER;./APP/FAN;./APP/HMC5883L;./APP/KEY;./APP/LCD;./APP/LED;./APP/LM35;./APP/MOTOR;./APP/MY_ADC;./APP/MY_IIC;./APP/MY_PWM;./APP/MY_RTC;./APP/MY_UART;./APP/RESISTOR;./APP/SMG;./APP/TIM;./APP/ULTRASOUND;./APP/XIAOCHUANG;./core/include;./core/mips;./libc;./ls1x-drv/include;./src/lkdGui_source/include;./src/lkdGui_source/port
 DefinedSymbols=LS1B;OS_NONE
 UndefinedSymbols=
 OptiFlags=
@@ -160,6 +160,9 @@ SetBPAtFunc=main
 InitCommands=
 SourcePaths=
 
+[Debugger]
+Count=0
+
 [Folders]
 Folders1=APP
 Folders2=APP/ALL
@@ -226,9 +229,6 @@ Folders62=src/lkdGui_source/include
 Folders63=src/lkdGui_source/port
 Folders64=src/lkdGui_source/port/fontDriver
 Folders65=src/lkdGui_source/source
-
-[Debugger]
-Count=0
 
 [Unit1]
 FileName=ctype.c
@@ -1069,3 +1069,11 @@ Folder=APP/MY_ADC
 [Unit210]
 FileName=my_adc.c
 Folder=APP/MY_ADC
+
+[Unit211]
+FileName=task.h
+Folder=
+
+[Unit212]
+FileName=task.c
+Folder=

@@ -46,17 +46,18 @@
 #include "my_uart.h"
 #include "my_rtc.h"
 #include "my_adc.h"
+#include "task.h"
 /*MY END*/
 
 #define SET  1
 #define RESET 0
 
 //Ê±¼äÆ¬ÂÖÑ¯
-typedef struct
-{
-    uint32_t TASK_LCD_TIME;
-}TASK_TypeDef;
-extern TASK_TypeDef TaskData;
+//typedef struct
+//{
+    //uint32_t TASK_LCD_TIME;
+//}TASK_TypeDef;
+//extern TASK_TypeDef TaskData;
 
 
 /*TEST FUNCTION BEGIN*/

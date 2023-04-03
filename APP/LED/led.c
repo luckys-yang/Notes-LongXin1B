@@ -56,7 +56,9 @@ void vLED_breathing_light(uint8_t color_led)
 {
     static uint8_t MENU = 0,flag = 1;
     static uint16_t t = 1,i = 0;
-    while(Led_run_Flag)
+    uint32_t i1 = 4000;
+    
+    while(i1--)
     {
         for(i=0; i<10; i++)
         {

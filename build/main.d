@@ -18,7 +18,7 @@ main.o main.o: ../main.c ../APP/ALL/all.h ../core/include/ls1b.h \
  ../APP/BH1750/bh1750.h ../APP/HMC5883L/hmc5883l.h ../APP/MY_IIC/my_iic.h \
  ../APP/MOTOR/motor.h ../APP/MY_PWM/my_pwm.h \
  ../APP/ULTRASOUND/ultrasound.h ../APP/MY_UART/my_uart.h \
- ../APP/MY_RTC/my_rtc.h ../APP/MY_ADC/my_adc.h ../APP/LCD/pic.h
+ ../APP/MY_RTC/my_rtc.h ../APP/MY_ADC/my_adc.h ../task.h ../APP/LCD/pic.h
 
 ../APP/ALL/all.h:
 
@@ -107,5 +107,7 @@ main.o main.o: ../main.c ../APP/ALL/all.h ../core/include/ls1b.h \
 ../APP/MY_RTC/my_rtc.h:
 
 ../APP/MY_ADC/my_adc.h:
+
+../task.h:
 
 ../APP/LCD/pic.h:

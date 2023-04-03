@@ -42,10 +42,15 @@ float fLM35_get_temperature(void)
 */
 void vLM35_run_function(void)
 {
-    if(Lm35_Data.Lm35_temp >= 30)
+    if(Lm35_Data.Lm35_temp > 20)   //大于20
     {
-        XiaoChuangData.vXIAOCHUANG_play_specify_content(3); //当前温度过高
+        Buzzer_Data.vBUZZER_control(SET);
+       // XiaoChuangData.vXIAOCHUANG_play_specify_content(3); //当前温度过高
        // delay_ms(1000);
+    }
+    else
+    {
+        Buzzer_Data.vBUZZER_control(RESET);
     }
 }
 

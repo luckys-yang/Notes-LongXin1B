@@ -97,11 +97,15 @@ void vBH1750_run_function(void)
 {
     if(Bh1750_Data.Bh1750_value <= 100)
     {
-        Led_Data.vLED_control(Led_Data.Red_Led,SET);    //ºìÁÁ
+        Led_Data.vLED_control(Led_Data.Blue_Led,RESET);    //
+        Led_Data.vLED_control(Led_Data.Red_Led,RESET);    //
+        Led_Data.vLED_control(Led_Data.Green_Led,SET);    //ÂÌÁÁ
     }
     else
     {
-        Led_Data.vLED_control(Led_Data.Red_Led,RESET);    //ºìÃð
+        Led_Data.vLED_control(Led_Data.Green_Led,RESET);    //
+        Led_Data.vLED_control(Led_Data.Blue_Led,RESET);    //
+        Led_Data.vLED_control(Led_Data.Red_Led,SET);    //ºìÁÁ
     }
 }
 

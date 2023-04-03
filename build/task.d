@@ -1,5 +1,4 @@
-APP/RESISTOR/resistor.o APP/RESISTOR/resistor.o: \
- ../APP/RESISTOR/resistor.c ../APP/RESISTOR/resistor.h ../APP/ALL/all.h \
+task.o task.o: ../task.c ../task.h ../APP/ALL/all.h \
  ../core/include/ls1b.h ../core/mips/mips.h ../core/include/tick.h \
  ../include/bsp.h ../core/include/ls1b_gpio.h ../core/include/ls1b.h \
  ../ls1x-drv/include/ls1x_fb.h ../ls1x-drv/include/fb.h \
@@ -21,7 +20,7 @@ APP/RESISTOR/resistor.o APP/RESISTOR/resistor.o: \
  ../APP/ULTRASOUND/ultrasound.h ../APP/MY_UART/my_uart.h \
  ../APP/MY_RTC/my_rtc.h ../APP/MY_ADC/my_adc.h ../task.h
 
-../APP/RESISTOR/resistor.h:
+../task.h:
 
 ../APP/ALL/all.h:
 

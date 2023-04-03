@@ -27,13 +27,20 @@ typedef struct
     uint8_t (*ucKEY_sub)(void);
     void (*vKEY_detection)(void);
     void (*vKEY_function)(void);
+    void (*vKEY_menu_display)(void);
 }KEY_TypeDef;
 
 extern KEY_TypeDef Key_Data;
+extern uint8_t key1_short_menu_task_state;
+extern uint8_t key1_long_enter_flag;  //按键1长按确认键(进入当前选择的任务)
+extern uint8_t key2_long_quit_flag;  //按键2长按退出键(退出当前正在执行的任务回到菜单页)
+extern bool lcd_display_refresh_flag;
+
 
 void vKEY_init(void);
 uint8_t ucKEY_sub(void);
 void vKEY_detection(void);
 void vKEY_function(void);
+void vKEY_menu_display(void);
 #endif
 
